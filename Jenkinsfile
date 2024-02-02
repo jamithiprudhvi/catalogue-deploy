@@ -28,7 +28,7 @@ pipeline {
             }
         }
 
-    } 
+     
 
         stage('terraform init') {
             steps {
@@ -39,7 +39,7 @@ pipeline {
             }
         }
 
-      
+    }  
     // post build
     post { 
         always { 
