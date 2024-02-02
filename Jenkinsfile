@@ -4,43 +4,69 @@ pipeline {
             label 'AGENT-1'
         }
     }
-    environment { 
-        packageVersion = ''
-        nexusURL = '172.31.2.43:8081'
-    }
+    // environment { 
+    //     packageVersion = ''
+    //     nexusURL = '172.31.5.95:8081'
+    // }
     options {
-        timeout(time: 1, unit: 'HOURS') 
+        timeout(time: 1, unit: 'HOURS')
         disableConcurrentBuilds()
+        ansiColor('xterm')
     }
     parameters {
-        string(name: 'VERSION', defaultValue: '1.0.0', description: 'What is the artificate version?')
-        string(name: 'environment', defaultValue: 'dev', description: 'What is the anvironment?')
-
-
+        string(name: 'version', defaultValue: '', description: 'What is the artifact version?')
+        string(name: 'environment', defaultValue: 'dev', description: 'What is environment?')
     }
-    Build
+    // build
     stages {
-        stage('print version') {
+        stage('Print version') {
             steps {
                 sh """
-                    echo "version: ${params.version}
-                    echo "environment: ${params.environment} 
+                    echo "version: ${params.version}"
+                    echo "environment: ${params.environment}"
+                """
+            }
+        }
+
+        stage('Init') {
+            steps {
+                sh """
+                    cd terraform
+                    terraform init --backend-config=${params.environment}/backend.tf -reconfigure
+                """
+            }
+        }
+
+        stage('Plan') {
+            steps {
+                sh """
+                    cd terraform
+                    terraform plan -var-file=${params.environment}/${params.environment}.tfvars -var="app_version=${params.version}"
+                """
+            }
+        }
+
+        stage('Apply') {
+            steps {
+                sh """
+                    cd terraform
+                    terraform apply -var-file=${params.environment}/${params.environment}.tfvars -var="app_version=${params.version}" -auto-approve
                 """
             }
         }
         
     }
-    // post Build
+    // post build
     post { 
         always { 
-            echo 'I will always say Hello again'
+            echo 'I will always say Hello again!'
             deleteDir()
         }
         failure { 
-            echo 'This runs when pipeline is failed, used generally to send some alerts'
+            echo 'this runs when pipeline is failed, used generally to send some alerts'
         }
-        success { 
-            echo 'It will say hello when pipe line is success'
+        success{
+            echo 'I will say Hello when pipeline is success'
         }
     }
 }
