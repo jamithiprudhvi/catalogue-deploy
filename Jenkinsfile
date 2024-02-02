@@ -29,7 +29,7 @@ pipeline {
         }
 
     } 
-    stages {
+
         stage('terraform init') {
             steps {
                 sh """
@@ -39,7 +39,7 @@ pipeline {
             }
         }
 
-    }    
+      
     // post build
     post { 
         always { 
