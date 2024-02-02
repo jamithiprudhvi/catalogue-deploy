@@ -12,72 +12,23 @@ pipeline {
         timeout(time: 1, unit: 'HOURS') 
         disableConcurrentBuilds()
     }
-    // parameters {
-    //     string(name: 'PERSON', defaultValue: 'Mr Jenkins', description: 'Who should I say hello to?')
+    parameters {
+        string(name: 'VERSION', defaultValue: '1.0.0', description: 'What is the artificate version?')
+        string(name: 'environment', defaultValue: 'dev', description: 'What is the anvironment?')
 
-    //     text(name: 'BIOGRAPHY', defaultValue: '', description: 'Enter some information about the person')
 
-    //     booleanParam(name: 'TOGGLE', defaultValue: true, description: 'Toggle this value')
-
-    //     choice(name: 'CHOICE', choices: ['One', 'Two', 'Three'], description: 'Pick something')
-
-    //     password(name: 'PASSWORD', defaultValue: 'SECRET', description: 'Enter a password')
-    // }
-    // Build
+    }
+    Build
     stages {
-        stage('Get the version') {
-            steps {
-                script{
-                    def packageJson = readJSON file: 'package.json'
-                    packageVersion = packageJson.version
-                    echo "application version: $packageVersion"
-
-                }
-            }
-        }
-        stage('Install dependencies') {
+        stage('print version') {
             steps {
                 sh """
-                    npm install
+                    echo "version: ${params.version}
+                    echo "environment: ${params.environment} 
                 """
             }
         }
-        stage('Build') {
-            steps {
-                sh """
-                    ls -la
-                    zip -q -r catalogue.zip ./* -x ".git" -x "*.zip"
-                    ls -ltr
-                """
-            }
-        }
-        stage('Publish Artificate') {
-            steps {
-                nexusArtifactUploader(
-                    nexusVersion: 'nexus3',
-                    protocol: 'http',
-                    nexusUrl: "${nexusURL}",
-                    groupId: 'com.roboshop',
-                    version: "${packageVersion}",
-                    repository: 'catalogue',
-                    credentialsId: 'nexus-auth',
-                    artifacts: [
-                        [artifactId: 'catalogue',
-                        classifier: '',
-                        file: 'catalogue.zip',
-                        type: 'zip']
-                    ]
-                )
-            }
-        }
-        stage('Deploy') {
-            steps {
-                sh """
-                    echo "Here i wrote shell script"
-                    #sleep 10
-                """
-            }
-        }
+        
     }
     // post Build
     post { 
