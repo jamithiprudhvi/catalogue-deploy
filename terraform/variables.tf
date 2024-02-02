@@ -22,3 +22,8 @@ variable "environment" {
 variable "zone_name" {
   default = "prudhvi.online"
 }
+
+variable "app_version" {
+  
+  
+}

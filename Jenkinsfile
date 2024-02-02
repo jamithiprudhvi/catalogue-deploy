@@ -28,6 +28,17 @@ pipeline {
             }
         }
 
+    } 
+    stages {
+        stage('terraform init') {
+            steps {
+                sh """
+                    cd terraform
+                    terraform init --backend-config=${params.environment}/backend.tf -reconfigure
+                """
+            }
+        }
+
     }    
     // post build
     post { 
