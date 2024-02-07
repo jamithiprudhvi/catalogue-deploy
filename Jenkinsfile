@@ -47,24 +47,24 @@ pipeline {
                 """
             }
         }
-        stage('terraform apply') {
-            steps {
-                sh """
-                    cd terraform
-                    terraform apply -var-file=${params.environment}/${params.environment}.tfvars -var="app_version=${params.version}" -auto-approve
-                    
-                """
-            }
-        }
-        // stage('terraform destroy') {
+        // stage('terraform apply') {
         //     steps {
         //         sh """
         //             cd terraform
-        //             terraform destroy -var-file=${params.environment}/${params.environment}.tfvars -var="app_version=${params.version}" -auto-approve
+        //             terraform apply -var-file=${params.environment}/${params.environment}.tfvars -var="app_version=${params.version}" -auto-approve
                     
         //         """
         //     }
         // }
+        stage('terraform destroy') {
+            steps {
+                sh """
+                    cd terraform
+                    terraform destroy -var-file=${params.environment}/${params.environment}.tfvars -var="app_version=${params.version}" -auto-approve
+                    
+                """
+            }
+        }
 
     }  
     // post build
